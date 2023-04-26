@@ -52,7 +52,15 @@ In case, you want to change the code after create the application you have to us
 ```bash
 pyinstaller math_practicesGUI.spec
 ```
+## Screenshots
 
+![App Screenshot 1](https://github.com/Jbaruz/mathpractice/blob/master/images/display1.png?raw=true)
+
+![App Screenshot 2](https://github.com/Jbaruz/mathpractice/blob/master/images/display2.png?raw=true)
+
+![App Screenshot 3](https://github.com/Jbaruz/mathpractice/blob/master/images/display3.png?raw=true)
+
+![App Screenshot 4](https://github.com/Jbaruz/mathpractice/blob/master/images/dispplay4.png?raw=true)
 
 ## Feedback
 
