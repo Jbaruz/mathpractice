@@ -8,7 +8,8 @@ from PyQt5.QtCore import QSize, Qt
 class CustomButton(QPushButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    
+        # Initialize user_name attribute
+        self.user_name = ""
     def sizeHint(self):
         size = super().sizeHint()
         return QSize(size.width() * 2, size.height() * 2)  # Adjust the size as desired
@@ -37,7 +38,7 @@ class MathPracticeApp(QMainWindow):
         answer = eval(f" {num1} {operation} {num2}")
 
         return {
-            'question': f"What is {num1} {operation} {num2}?",
+            'question': f"{self.user_name} What is {num1} {operation} {num2}?",
             'answer': round(answer, 2),
             'operation': operation
         }
@@ -113,7 +114,7 @@ class MathPracticeApp(QMainWindow):
 
         
         # Initialize user_name attribute
-        self.user_name = ""
+
 
     def resource_path(self, relative_path):
         try:
@@ -182,8 +183,7 @@ class MathPracticeApp(QMainWindow):
                 f"Unbeliavable {self.user_name} it was correct!")
             self.score += 1
         else:
-            self.result_label.setText(
-                f"Sorry {self.user_name} it is incorrect!. The correct answer is {question['answer']}.")
+            self.result_label.setText(f"Sorry {self.user_name} it is incorrect!.\nThe correct answer is {question['answer']}.")
             self.user_weaknesses[self.operation_to_key[question["operation"]]] += 1
 
         
