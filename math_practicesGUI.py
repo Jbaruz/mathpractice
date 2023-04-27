@@ -12,30 +12,47 @@ class CustomButton(QPushButton):
     def sizeHint(self):
         size = super().sizeHint()
         return QSize(size.width() * 2, size.height() * 2)  # Adjust the size as desired
-def generate_question():
-    num1 = random.randint(-10, 10)
-    num2 = random.randint(-10, 10)
-    operation = random.choice(['+', '-', '*'])
-    answer = eval(f" {num1} {operation} {num2}")
 
-    return {
-        'question': f"What is {num1} {operation} {num2}?",
-        'answer': round(answer, 2)
-    }
 
 class MathPracticeApp(QMainWindow):
+    operation_to_key = {
+    '+': 'addition',
+    '-': 'subtraction',
+    '*': 'multiplication'
+    }
+    
+    def generate_question(self,user_weaknesses):
+        total_weaknesses = sum(user_weaknesses.values())
+        if total_weaknesses == 0:
+            operation = random.choice(["+", "-", "*"])
+        else:
+            operation = random.choices(
+                ["+", "-", "*"],
+                weights=[user_weaknesses["addition"], user_weaknesses["subtraction"], user_weaknesses["multiplication"]],
+                k=1
+            )[0]
+
+        num1 = random.randint(-10, 10)
+        num2 = random.randint(-10, 10)
+        answer = eval(f" {num1} {operation} {num2}")
+
+        return {
+            'question': f"What is {num1} {operation} {num2}?",
+            'answer': round(answer, 2),
+            'operation': operation
+        }
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Math Practice")
-        self.setGeometry(100, 100, 500, 400)
+        self.setGeometry(100, 100, 560, 400)
 
         image_path = self.resource_path("ava.png")
-        background_image = QImage(image_path)
+
 
         self.layout = QVBoxLayout()
 
-        self.label = QLabel("Enter your name, Ava is watching you:")
+        self.label = QLabel("Enter your name\n, Ava is watching you:")
         self.layout.addWidget(self.label)
 
         self.name_input = QLineEdit()
@@ -57,10 +74,9 @@ class MathPracticeApp(QMainWindow):
 
         # Customizations
         self.customize_widgets()
-
+    
     def start_math_practice(self):
         self.user_name = self.name_input.text()
-        self.questions = [generate_question() for _ in range(10)]
         self.score = 0
         self.current_question = 0
 
@@ -88,10 +104,16 @@ class MathPracticeApp(QMainWindow):
         self.question_label.setFont(custom_font)
         self.result_label.setFont(custom_font)
 
+        self.user_weaknesses = {"addition": 0, "subtraction": 0, "multiplication": 0}
+        self.questions = [self.generate_question(self.user_weaknesses) for _ in range(10)]
+
         self.submit_button.clicked.connect(self.check_answer)
-        
+
         self.show_question()
 
+        
+        # Initialize user_name attribute
+        self.user_name = ""
 
     def resource_path(self, relative_path):
         try:
@@ -121,7 +143,7 @@ class MathPracticeApp(QMainWindow):
         # Set background image
         image_path = self.resource_path("ava.png")
         image = QImage(image_path)
-        image = image.scaled(600, 400)  # Adjust the size of the image to fit the window
+        image = image.scaled(560, 400)  # Adjust the size of the image to fit the window
         palette = QPalette()
         palette.setBrush(QPalette.Background, QBrush(image))
         self.setPalette(palette)
@@ -143,8 +165,7 @@ class MathPracticeApp(QMainWindow):
             self.play_again_button = QPushButton("Play Again")
             self.layout.addWidget(self.play_again_button)
             self.play_again_button.clicked.connect(self.reset_app)
-
-
+            
     def check_answer(self):
         user_answer = self.answer_input.text()
 
@@ -163,10 +184,13 @@ class MathPracticeApp(QMainWindow):
         else:
             self.result_label.setText(
                 f"Sorry {self.user_name} it is incorrect!. The correct answer is {question['answer']}.")
+            self.user_weaknesses[self.operation_to_key[question["operation"]]] += 1
 
+        
         self.current_question += 1
         self.show_question()
         self.answer_input.clear()
+
         
     def reset_app(self):
         # Remove the current widgets from the layout
@@ -194,21 +218,38 @@ class MathPracticeApp(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    app.setStyleSheet("""
+        QPushButton {
+            background-color: lightblue;
+            font-size: 24px;
+            font-family: 'Comic Sans MS';
+            color: yellow;
+            padding: 10px 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 30px 74px 0px 74px;
+        }
+        QPushButton:hover {
+            background-color: blue;
+        }
+        QLabel {
+            color: darkblue;
+            font-family: 'Comic Sans MS';
+            font-size: 20px;
+        }
+        QLineEdit {
+            background-color: white;
+            color: darkblue;
+            font-family: 'Comic Sans MS';
+            font-size: 20px;
+            border: 1px solid lightblue;
+            border-radius: 5px;
+            padding: 5px;
+            margin: 10px 95px 0px 95px;
+        }
+    """)
+
     main_window = MathPracticeApp()
     main_window.show()
     sys.exit(app.exec_())
-
-app.setStyleSheet("""
-    QPushButton {
-        background-color: lightblue;
-        font-size: 24px;
-        font-family: Arial;
-        color: yellow;
-        padding: 10px;
-        border-radius: 5px;
-        font-weight: bold;
-    }
-    QPushButton:hover {
-        background-color: blue;
-    }
-""")
