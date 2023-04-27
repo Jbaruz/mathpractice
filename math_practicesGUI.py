@@ -52,7 +52,7 @@ class MathPracticeApp(QMainWindow):
 
         self.layout = QVBoxLayout()
 
-        self.label = QLabel("Enter your name\n, Ava is watching you:")
+        self.label = QLabel("Enter your name\nAva is watching you:")
         self.layout.addWidget(self.label)
 
         self.name_input = QLineEdit()
